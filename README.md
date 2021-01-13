@@ -97,7 +97,7 @@ Only at the end of each method should you add **Async**.
     var Promise = require('bluebird');
     var Keyv = require('keyv');
     var keyv = new Keyv();
-    var JWTK =  require('jwt-redis');
+    var JWTK =  require('jwt-keyv');
     var jwtk = new JWTK(keyv);
 
     var jwtrAsync = Promise.promisifyAll(jwtr);
@@ -135,7 +135,7 @@ Also in the options you can specify a prefix for the redis keys. By default it i
 var options = {
     prefix: 'example'
 }
-var jwtk = new JWTK(redis, options);
+var jwtk = new JWTK(keyv, options);
 ```
 
 # TypesScript
