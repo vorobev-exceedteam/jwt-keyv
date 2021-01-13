@@ -100,7 +100,7 @@ Only at the end of each method should you add **Async**.
     var JWTK =  require('jwt-keyv');
     var jwtk = new JWTK(keyv);
 
-    var jwtrAsync = Promise.promisifyAll(jwtr);
+    var jwtkAsync = Promise.promisifyAll(jwtk);
 
     jwtkAsync
     .signAsync({}, secret)
