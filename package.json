@@ -7,7 +7,8 @@
   "scripts": {
     "build": "rimraf build && tsc -p tsconfig.build.json",
     "start": "ts-node-dev -r tsconfig-paths/register src/JWTKeyv.ts",
-    "test": "ts-mocha test/**/*.ts --full-stack"
+    "test": "ts-mocha test/**/*.ts --full-stack",
+    "prepare": "npm run build"
   },
   "author": "Vorobyov Vitaliy <vitalik.w555@gmail.com>",
   "contributors": [
