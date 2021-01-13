@@ -1,22 +1,22 @@
 import * as chai from 'chai';
-import * as redisMock from 'redis-mock';
-import JWTRedis from '../src/index';
+import JWTKeyv from '../src/index';
 import {generateId} from "./util";
+import Keyv = require("keyv");
 
 describe('Test sign', () => {
 
     const {expect} = chai;
 
-    let jwtRedis: JWTRedis;
+    let jwtKeyv: JWTKeyv;
 
     before(() => {
-        const redisClient = redisMock.createClient();
-        jwtRedis = new JWTRedis(redisClient);
+        const keyv = new Keyv();
+        jwtKeyv = new JWTKeyv(keyv);
     });
 
     it('1', (done) => {
         const key = generateId(10);
-        jwtRedis.sign({}, key)
+        jwtKeyv.sign({}, key)
             .then((token: string) => {
                 expect(token).to.be.a('string')
                 done();

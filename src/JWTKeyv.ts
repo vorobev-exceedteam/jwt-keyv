@@ -1,27 +1,26 @@
-import * as redis from 'redis';
 import * as jsonwebtoken from 'jsonwebtoken';
 import {Secret} from "jsonwebtoken";
 import {SignOptions} from "jsonwebtoken";
-import Redis from "./Redis";
 import {GetPublicKeyOrSecret} from "jsonwebtoken";
 import {VerifyOptions} from "jsonwebtoken";
 import {DecodeOptions} from "jsonwebtoken";
 import TokenInvalidError from "./error/TokenInvalidError";
 import TokenDestroyedError from "./error/TokenDestroyedError";
+import * as Keyv from "keyv";
 
 
 export interface Options {
     prefix: string;
 }
 
-export default class JWTRedis {
+export default class JWTKeyv {
 
     private readonly options: Options;
-    private readonly redis: Redis;
+    private readonly keyv: Keyv;
 
-    constructor(private readonly redisClient: redis.RedisClient, options?: Options) {
+    constructor(keyv: Keyv, options?: Options) {
         this.options = Object.assign({prefix: 'jwt_label:'}, options || {});
-        this.redis = new Redis(redisClient);
+        this.keyv = keyv;
     }
 
     public sign = async <T extends object & { jti?: string }> (payload: T, secretOrPrivateKey: Secret, options?: SignOptions): Promise<string> => {
@@ -30,16 +29,16 @@ export default class JWTRedis {
         const decoded: any = jsonwebtoken.decode(token);
         const key = this.options.prefix + jti;
         if (decoded.exp) {
-            await this.redis.setExp(key, 'true', 'EX', Math.floor(decoded.exp - Date.now() / 1000));
+            await this.keyv.set(key, 'true', Math.floor(decoded.exp - Date.now() / 1000));
         } else{
-            await this.redis.set(key, 'true');
+            await this.keyv.set(key, 'true');
         }
         return token;
     }
 
     public destroy = (jti: string): Promise<boolean> => {
         const key = this.options.prefix + jti;
-        return this.redis.del(key);
+        return this.keyv.delete(key);
     }
 
     public decode<T>(token: string, options?: DecodeOptions): T {
@@ -59,7 +58,7 @@ export default class JWTRedis {
                 throw new TokenInvalidError();
             }
             const key = this.options.prefix + decoded.jti;
-            return this.redis.get(key)
+            return this.keyv.get(key)
                 .then((result: string) => {
                     if (!result) {
                         throw new TokenDestroyedError();
@@ -68,8 +67,6 @@ export default class JWTRedis {
                 });
         })
     }
-
-
 }
 
 function generateId(length: number) {

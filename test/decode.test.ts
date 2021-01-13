@@ -1,25 +1,25 @@
 import * as chai from 'chai';
-import * as redisMock from 'redis-mock';
-import JWTRedis from '../src/index';
+import JWTKeyv from '../src/index';
 import {generateId} from "./util";
+import Keyv = require("keyv");
 
 describe('Test decode', () => {
 
     const {expect} = chai;
 
-    let jwtRedis: JWTRedis;
+    let jwtKeyv: JWTKeyv;
 
     before(() => {
-        const redisClient = redisMock.createClient();
-        jwtRedis = new JWTRedis(redisClient);
+        const keyv = new Keyv();
+        jwtKeyv = new JWTKeyv(keyv);
     });
 
     it('1', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10)};
-        jwtRedis.sign(payload, key)
+        jwtKeyv.sign(payload, key)
             .then((token: string) => {
-                return jwtRedis.decode<{jti: string}>(token);
+                return jwtKeyv.decode<{jti: string}>(token);
             })
             .then((decoded)=>{
                 expect(decoded).to.have.property('iat');
@@ -32,9 +32,9 @@ describe('Test decode', () => {
     it('2', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10)};
-        jwtRedis.sign(payload, key, {expiresIn: '1d'})
+        jwtKeyv.sign(payload, key, {expiresIn: '1d'})
             .then((token: string) => {
-                return jwtRedis.decode<{jti: string}>(token);
+                return jwtKeyv.decode<{jti: string}>(token);
             })
             .then((decoded)=>{
                 expect(decoded).to.have.property('iat');
@@ -48,9 +48,9 @@ describe('Test decode', () => {
     it('3', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10), exp: new Date().getSeconds()};
-        jwtRedis.sign(payload, key)
+        jwtKeyv.sign(payload, key)
             .then((token: string) => {
-                return jwtRedis.decode<{jti: string}>(token);
+                return jwtKeyv.decode<{jti: string}>(token);
             })
             .then((decoded)=>{
                 expect(decoded).to.have.property('iat');

@@ -1,28 +1,28 @@
 import * as chai from 'chai';
-import * as redisMock from 'redis-mock';
-import JWTRedis, {TokenDestroyedError} from '../src/index';
+import JWTKeyv, {TokenDestroyedError} from '../src/index';
 import {generateId} from "./util";
 import {TokenExpiredError} from "jsonwebtoken";
 import * as chaiAsPromised from "chai-as-promised";
+import Keyv = require("keyv");
 
 describe('Test destroy', () => {
 
     const {expect} = chai;
     chai.use(chaiAsPromised);
 
-    let jwtRedis: JWTRedis;
+    let jwtKeyv: JWTKeyv;
 
     before(() => {
-        const redisClient = redisMock.createClient();
-        jwtRedis = new JWTRedis(redisClient);
+        const keyv = new Keyv();
+        jwtKeyv = new JWTKeyv(keyv);
     });
 
     it('1', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10)};
-        jwtRedis.sign(payload, key)
+        jwtKeyv.sign(payload, key)
             .then((token: string) => {
-                return jwtRedis.verify(token, key);
+                return jwtKeyv.verify(token, key);
             })
             .then(()=>{
                 done();
@@ -33,9 +33,9 @@ describe('Test destroy', () => {
     it('2', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10)};
-        jwtRedis.sign(payload, key, {expiresIn: '1d'})
+        jwtKeyv.sign(payload, key, {expiresIn: '1d'})
             .then((token: string) => {
-                return jwtRedis.verify<{jti: string}>(token, key);
+                return jwtKeyv.verify<{jti: string}>(token, key);
             })
             .then((decoded)=>{
                 expect(decoded).to.have.property('iat');
@@ -49,9 +49,9 @@ describe('Test destroy', () => {
     it('3', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10)};
-        jwtRedis.sign(payload, key, {expiresIn: '0s'})
+        jwtKeyv.sign(payload, key, {expiresIn: '0s'})
             .then((token: string) => {
-                expect(jwtRedis.verify<{jti: string}>(token, key)).to.be.rejectedWith(TokenExpiredError);
+                expect(jwtKeyv.verify<{jti: string}>(token, key)).to.be.rejectedWith(TokenExpiredError);
                 done();
             })
             .catch(done);
@@ -60,9 +60,9 @@ describe('Test destroy', () => {
     it('4', (done) => {
         const key = generateId(10);
         const payload = {jti: generateId(10), exp: new Date().getSeconds()};
-        jwtRedis.sign(payload, key)
+        jwtKeyv.sign(payload, key)
             .then((token: string) => {
-                expect(jwtRedis.verify<{jti: string}>(token, key)).to.be.rejectedWith(TokenExpiredError);
+                expect(jwtKeyv.verify<{jti: string}>(token, key)).to.be.rejectedWith(TokenExpiredError);
                 done();
             })
             .catch(done);
