@@ -29,7 +29,7 @@ export default class JWTKeyv {
         const decoded: any = jsonwebtoken.decode(token);
         const key = this.options.prefix + jti;
         if (decoded.exp) {
-            await this.keyv.set(key, 'true', Math.floor(decoded.exp - Date.now() / 1000));
+            await this.keyv.set(key, 'true', Math.floor(decoded.exp*1000 - Date.now()));
         } else{
             await this.keyv.set(key, 'true');
         }
