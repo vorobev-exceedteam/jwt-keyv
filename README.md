@@ -1,6 +1,6 @@
 # jwt-keyv
 
-This library is just a fork of [jwt-redis](https://github.com/Natashkinsasha/jwt-redis-v2) that uses redis instead of keyv. Readme is an adapted copy of original one.
+This library is just a fork of [jwt-redis](https://github.com/Natashkinsasha/jwt-redis-v2) that uses keyv instead of redis. Readme is an adapted copy of original one.
 
 
 # Installation
