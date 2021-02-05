@@ -21,10 +21,10 @@ yarn add vorobev-exceedteam/jwt-keyv#master
 
 ```javascript
 var keyv = require('keyv');
-var JWTR =  require('jwt-keyv').default;
+var JWTK =  require('jwt-keyv').default;
 //ES6 import JWTK from 'jwt-keyv';
 var keyvClient = Keyv();
-var jwtr = new JWTR(keyvClient);
+var jwtk = new JWTK(keyvClient);
 
 var secret = 'secret';
 var jti = 'test';
